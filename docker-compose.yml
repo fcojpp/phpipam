@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  phpipam-web:
+    image: phpipam/phpipam-www:latest
+    ports:
+      - "80:80"
+    environment:
+      - TZ=Europe/London
+      - IPAM_DATABASE_HOST=phpipam-mariadb
+      - IPAM_DATABASE_PASS=aF5ST9sFVTg_}V{@!J
+      - IPAM_DATABASE_WEBHOST=%
+    restart: unless-stopped
+    volumes:
+      - ./logo:/phpipam/css/images/logo
+      - ./certs:/usr/local/share/ca-certificates:ro
+    depends_on:
+      - phpipam-mariadb
+
+  phpipam-cron:
+    image: phpipam/phpipam-cron:latest
+    environment:
+      - TZ=Europe/Madrid
+      - IPAM_DATABASE_HOST=phpipam-mariadb
+      - IPAM_DATABASE_PASS=aF5ST9sFVTg_}V{@!J
+      - SCAN_INTERVAL=10m
+    restart: unless-stopped
+    volumes:
+      - ./certs:/usr/local/share/ca-certificates:ro
+    depends_on:
+      - phpipam-mariadb
+
+  phpipam-mariadb:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=aF5ST9sFVTg_}V{@!J
+    restart: unless-stopped
+    volumes:
+      - ./data:/var/lib/mysql
+
